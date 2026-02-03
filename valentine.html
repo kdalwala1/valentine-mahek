@@ -88,65 +88,72 @@
     </section>
 
     <!-- Page 5: Songs Page -->
-    <section class="page" id="songs" data-testid="songs-page">
-        <div class="songs-content">
-            <h2 class="page-title">Our Playlist 🎵</h2>
-            <p class="page-subtitle">Songs that remind me of you</p>
-            <div class="cassettes-container">
-                <div class="cassette-card" data-testid="song-card-1">
-                    <div class="cassette">
-                        <div class="cassette-label">
-                            <p class="song-title">Song Title 1</p>
-                            <p class="song-artist">Artist Name</p>
-                        </div>
-                        <div class="cassette-reels">
-                            <div class="reel"></div>
-                            <div class="reel"></div>
-                        </div>
-                    </div>
-                    <button class="play-button" onclick="toggleSong(1)" data-testid="play-song-1">▶ Play</button>
-                    <audio id="song1" data-testid="audio-1">
-                        <source src="[SONG_URL_1]" type="audio/mpeg">
-                    </audio>
-                </div>
+<section class="page" id="songs" data-testid="songs-page">
+  <div class="songs-content">
+    <h2 class="page-title">Our Playlist 🎵</h2>
+    <p class="page-subtitle">Songs that remind me of you</p>
 
-                <div class="cassette-card" data-testid="song-card-2">
-                    <div class="cassette">
-                        <div class="cassette-label">
-                            <p class="song-title">Song Title 2</p>
-                            <p class="song-artist">Artist Name</p>
-                        </div>
-                        <div class="cassette-reels">
-                            <div class="reel"></div>
-                            <div class="reel"></div>
-                        </div>
-                    </div>
-                    <button class="play-button" onclick="toggleSong(2)" data-testid="play-song-2">▶ Play</button>
-                    <audio id="song2" data-testid="audio-2">
-                        <source src="[SONG_URL_2]" type="audio/mpeg">
-                    </audio>
-                </div>
+    <div class="cassettes-container">
 
-                <div class="cassette-card" data-testid="song-card-3">
-                    <div class="cassette">
-                        <div class="cassette-label">
-                            <p class="song-title">Song Title 3</p>
-                            <p class="song-artist">Artist Name</p>
-                        </div>
-                        <div class="cassette-reels">
-                            <div class="reel"></div>
-                            <div class="reel"></div>
-                        </div>
-                    </div>
-                    <button class="play-button" onclick="toggleSong(3)" data-testid="play-song-3">▶ Play</button>
-                    <audio id="song3" data-testid="audio-3">
-                        <source src="[SONG_URL_3]" type="audio/mpeg">
-                    </audio>
-                </div>
-            </div>
-            <button class="cta-button" onclick="navigateToPage('memory-game')" data-testid="songs-continue-btn">Next →</button>
+      <!-- SONG 1 -->
+      <div class="cassette-card">
+        <div class="cassette">
+          <div class="cassette-label">
+            <p class="song-title">Gehra Hua</p>
+            <p class="song-artist">Arijit Singh</p>
+          </div>
+          <div class="cassette-reels">
+            <div class="reel"></div>
+            <div class="reel"></div>
+          </div>
         </div>
-    </section>
+        <button class="play-button" onclick="toggleSong(1)">▶ Play</button>
+        <audio id="song1">
+          <source src="audio/gehra-hua.mp3" type="audio/mpeg">
+        </audio>
+      </div>
+
+      <!-- SONG 2 -->
+      <div class="cassette-card">
+        <div class="cassette">
+          <div class="cassette-label">
+            <p class="song-title">Snowman</p>
+            <p class="song-artist">Sia</p>
+          </div>
+          <div class="cassette-reels">
+            <div class="reel"></div>
+            <div class="reel"></div>
+          </div>
+        </div>
+        <button class="play-button" onclick="toggleSong(2)">▶ Play</button>
+        <audio id="song2">
+          <source src="audio/sia-snowman.m4a" type="audio/mp4">
+        </audio>
+      </div>
+
+      <!-- SONG 3 -->
+      <div class="cassette-card">
+        <div class="cassette">
+          <div class="cassette-label">
+            <p class="song-title">I Wanna Be Yours</p>
+            <p class="song-artist">Alex Turner</p>
+          </div>
+          <div class="cassette-reels">
+            <div class="reel"></div>
+            <div class="reel"></div>
+          </div>
+        </div>
+        <button class="play-button" onclick="toggleSong(3)">▶ Play</button>
+        <audio id="song3">
+          <source src="audio/i-wanna-be-yours.mp3" type="audio/mpeg">
+        </audio>
+      </div>
+
+    </div>
+
+    <button class="cta-button" onclick="navigateToPage('memory-game')">Next →</button>
+  </div>
+</section>
 
     <!-- Page 6: Memory Game -->
     <section class="page" id="memory-game" data-testid="memory-game-page">

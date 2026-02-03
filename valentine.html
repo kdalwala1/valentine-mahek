@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Something Special ✨</title>
+    <link rel="stylesheet" href="valentine-style.css">
+</head>
+<body>
+    <!-- Floating petals background -->
+    <div class="petals-container" id="petalsContainer"></div>
+
+    <!-- Hamburger Menu -->
+    <div class="hamburger" id="hamburger" data-testid="hamburger-menu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <!-- Explore Overlay -->
+    <div class="explore-overlay" id="exploreOverlay" data-testid="explore-overlay">
+        <div class="explore-content">
+            <h2>Explore 💕</h2>
+            <div class="explore-menu">
+                <div class="explore-item" data-page="loading" data-testid="nav-start">✨ Start</div>
+                <div class="explore-item" data-page="memory-game" data-testid="nav-memory-game">🎮 Memory Game</div>
+                <div class="explore-item" data-page="songs" data-testid="nav-activities">🎵 Songs</div>
+                <div class="explore-item" data-page="moments" data-testid="nav-moments">📷 Moments</div>
+                <div class="explore-item" data-page="why-special" data-testid="nav-why-special">💖 Why Special</div>
+                <div class="explore-item" data-page="final-letter" data-testid="nav-letter">💌 Letter</div>
+            </div>
+            <button class="close-explore" id="closeExplore" data-testid="close-explore">Close</button>
+        </div>
+    </div>
+
+    <!-- Page 1: Loading Screen -->
+    <section class="page active" id="loading" data-testid="loading-page">
+        <div class="loading-content">
+            <h1 class="loading-title">Something Special ✨</h1>
+            <p class="loading-subtitle">is being prepared for you...</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Page 2: Valentine Proposal -->
+    <section class="page" id="proposal" data-testid="proposal-page">
+        <div class="proposal-content">
+            <h1 class="proposal-title">Will You Be My Valentine? 💕</h1>
+            <p class="proposal-subtitle">Mahek, I have something special to share with you...</p>
+            <button class="cta-button" onclick="navigateToPage('envelope')" data-testid="proposal-continue-btn">Continue →</button>
+        </div>
+    </section>
+
+    <!-- Page 3: Envelope Page -->
+    <section class="page" id="envelope" data-testid="envelope-page">
+        <div class="envelope-content">
+            <h2 class="page-title">You've Got Mail 💌</h2>
+            <div class="envelope-wrapper" id="envelopeWrapper" data-testid="envelope-card">
+                <div class="envelope" id="envelope">
+                    <div class="envelope-flap"></div>
+                    <div class="envelope-body">
+                        <div class="envelope-letter">
+                            <p>Click to open</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="hint-text" id="envelopeHint">Tap the envelope to open</p>
+        </div>
+    </section>
+
+    <!-- Page 4: Love Letter -->
+    <section class="page" id="love-letter" data-testid="love-letter-page">
+        <div class="letter-content">
+            <div class="letter-card">
+                <h2 class="letter-heading">Dear Mahek, 💕</h2>
+                <div class="letter-text">
+                    <p>Mahek,</p>
+                    <p>With you, even the simplest moments feel special.</p>
+                    <p>You are my peace, my smile, and my favorite place to be. ❤️</p>
+                </div>
+                <p class="letter-signature">With love,<br>Karan ❤️</p>
+            </div>
+            <button class="cta-button" onclick="navigateToPage('songs')" data-testid="letter-continue-btn">Keep Going →</button>
+        </div>
+    </section>
+
+    <!-- Page 5: Songs Page -->
+    <section class="page" id="songs" data-testid="songs-page">
+        <div class="songs-content">
+            <h2 class="page-title">Our Playlist 🎵</h2>
+            <p class="page-subtitle">Songs that remind me of you</p>
+            <div class="cassettes-container">
+                <div class="cassette-card" data-testid="song-card-1">
+                    <div class="cassette">
+                        <div class="cassette-label">
+                            <p class="song-title">Song Title 1</p>
+                            <p class="song-artist">Artist Name</p>
+                        </div>
+                        <div class="cassette-reels">
+                            <div class="reel"></div>
+                            <div class="reel"></div>
+                        </div>
+                    </div>
+                    <button class="play-button" onclick="toggleSong(1)" data-testid="play-song-1">▶ Play</button>
+                    <audio id="song1" data-testid="audio-1">
+                        <source src="[SONG_URL_1]" type="audio/mpeg">
+                    </audio>
+                </div>
+
+                <div class="cassette-card" data-testid="song-card-2">
+                    <div class="cassette">
+                        <div class="cassette-label">
+                            <p class="song-title">Song Title 2</p>
+                            <p class="song-artist">Artist Name</p>
+                        </div>
+                        <div class="cassette-reels">
+                            <div class="reel"></div>
+                            <div class="reel"></div>
+                        </div>
+                    </div>
+                    <button class="play-button" onclick="toggleSong(2)" data-testid="play-song-2">▶ Play</button>
+                    <audio id="song2" data-testid="audio-2">
+                        <source src="[SONG_URL_2]" type="audio/mpeg">
+                    </audio>
+                </div>
+
+                <div class="cassette-card" data-testid="song-card-3">
+                    <div class="cassette">
+                        <div class="cassette-label">
+                            <p class="song-title">Song Title 3</p>
+                            <p class="song-artist">Artist Name</p>
+                        </div>
+                        <div class="cassette-reels">
+                            <div class="reel"></div>
+                            <div class="reel"></div>
+                        </div>
+                    </div>
+                    <button class="play-button" onclick="toggleSong(3)" data-testid="play-song-3">▶ Play</button>
+                    <audio id="song3" data-testid="audio-3">
+                        <source src="[SONG_URL_3]" type="audio/mpeg">
+                    </audio>
+                </div>
+            </div>
+            <button class="cta-button" onclick="navigateToPage('memory-game')" data-testid="songs-continue-btn">Next →</button>
+        </div>
+    </section>
+
+    <!-- Page 6: Memory Game -->
+    <section class="page" id="memory-game" data-testid="memory-game-page">
+        <div class="game-content">
+            <h2 class="page-title">Memory Match Game 🎮</h2>
+            <div class="game-stats">
+                <p>Moves: <span id="moves" data-testid="game-moves">0</span></p>
+                <p>Matches: <span id="matches" data-testid="game-matches">0</span> / 6</p>
+            </div>
+            <div class="game-board" id="gameBoard" data-testid="game-board">
+                <!-- Game cards will be generated by JavaScript -->
+            </div>
+            <div class="game-win" id="gameWin" data-testid="game-win-message">
+                <h3>You Won! 🎉</h3>
+                <p>You completed the game in <span id="finalMoves">0</span> moves!</p>
+            </div>
+            <button class="cta-button" onclick="navigateToPage('moments')" data-testid="game-continue-btn">Continue →</button>
+        </div>
+    </section>
+
+    <!-- Page 7: Moments/Polaroids -->
+    <section class="page" id="moments" data-testid="moments-page">
+        <div class="moments-content">
+            <h2 class="page-title">Our Moments 📷</h2>
+            <p class="page-subtitle">Memories with Mahek</p>
+            <div class="polaroids-container">
+                <div class="polaroid" style="transform: rotate(-5deg)" data-testid="polaroid-1">
+                    <div class="polaroid-image">
+                        <div class="image-placeholder">📸</div>
+                        <!-- Replace with: <img src="[PHOTO_URL_1]" alt="Memory 1"> -->
+                    </div>
+                    <p class="polaroid-caption">Beautiful moment 1</p>
+                </div>
+
+                <div class="polaroid" style="transform: rotate(3deg)" data-testid="polaroid-2">
+                    <div class="polaroid-image">
+                        <div class="image-placeholder">💕</div>
+                        <!-- Replace with: <img src="[PHOTO_URL_2]" alt="Memory 2"> -->
+                    </div>
+                    <p class="polaroid-caption">Special memory 2</p>
+                </div>
+
+                <div class="polaroid" style="transform: rotate(-3deg)" data-testid="polaroid-3">
+                    <div class="polaroid-image">
+                        <div class="image-placeholder">✨</div>
+                        <!-- Replace with: <img src="[PHOTO_URL_3]" alt="Memory 3"> -->
+                    </div>
+                    <p class="polaroid-caption">Sweet moment 3</p>
+                </div>
+
+                <div class="polaroid" style="transform: rotate(4deg)" data-testid="polaroid-4">
+                    <div class="polaroid-image">
+                        <div class="image-placeholder">💖</div>
+                        <!-- Replace with: <img src="[PHOTO_URL_4]" alt="Memory 4"> -->
+                    </div>
+                    <p class="polaroid-caption">Cherished memory 4</p>
+                </div>
+            </div>
+            <button class="cta-button" onclick="navigateToPage('flowers-gift')" data-testid="moments-continue-btn">Next →</button>
+        </div>
+    </section>
+
+    <!-- Page 8: Flowers & Gift -->
+    <section class="page" id="flowers-gift" data-testid="flowers-gift-page">
+        <div class="gift-content">
+            <h2 class="page-title">For Mahek 🌹</h2>
+            <div class="gift-display">
+                <div class="flowers-section">
+                    <div class="flower">🌹</div>
+                    <div class="flower">🌸</div>
+                    <div class="flower">🌺</div>
+                    <div class="flower">🌷</div>
+                    <div class="flower">🌻</div>
+                </div>
+                <div class="gift-box" data-testid="gift-box">
+                    <p class="gift-emoji">🎁</p>
+                    <p class="gift-text">A special gift just for you</p>
+                </div>
+            </div>
+            <button class="cta-button" onclick="navigateToPage('why-special')" data-testid="gift-continue-btn">Continue →</button>
+        </div>
+    </section>
+
+    <!-- Page 9: Why You Matter -->
+    <section class="page" id="why-special" data-testid="why-special-page">
+        <div class="why-special-content">
+            <h2 class="page-title">Why Mahek Is Special 💖</h2>
+            <div class="reasons-container">
+                <div class="reason-card" data-testid="reason-card-1">
+                    <div class="reason-icon">💝</div>
+                    <h3>Genuine Heart</h3>
+                    <p>Your authenticity and sincerity shine through everything you do</p>
+                </div>
+
+                <div class="reason-card" data-testid="reason-card-2">
+                    <div class="reason-icon">🌸</div>
+                    <h3>Calm Presence</h3>
+                    <p>You bring peace and comfort just by being around</p>
+                </div>
+
+                <div class="reason-card" data-testid="reason-card-3">
+                    <div class="reason-icon">✨</div>
+                    <h3>Kind Nature</h3>
+                    <p>Your kindness touches everyone you meet</p>
+                </div>
+
+                <div class="reason-card" data-testid="reason-card-4">
+                    <div class="reason-icon">👂</div>
+                    <h3>You Listen</h3>
+                    <p>You truly hear and understand what others say</p>
+                </div>
+
+                <div class="reason-card" data-testid="reason-card-5">
+                    <div class="reason-icon">💪</div>
+                    <h3>Soft Strength</h3>
+                    <p>Your gentle resilience inspires those around you</p>
+                </div>
+
+                <div class="reason-card" data-testid="reason-card-6">
+                    <div class="reason-icon">🌟</div>
+                    <h3>Just You</h3>
+                    <p>Everything about you, exactly as you are</p>
+                </div>
+            </div>
+            <button class="cta-button" onclick="navigateToPage('final-letter')" data-testid="why-special-continue-btn">Continue →</button>
+        </div>
+    </section>
+
+    <!-- Page 10: Final Love Letter -->
+    <section class="page" id="final-letter" data-testid="final-letter-page">
+        <div class="final-letter-content">
+            <div class="final-letter-card">
+                <h2 class="letter-heading">My Love, 💕</h2>
+                <div class="letter-text">
+                    <p>Loving you is the easiest and most beautiful thing I've ever known. You have a way of making my world feel lighter, warmer, and more meaningful just by being in it. Every smile of yours feels like a promise, every moment with you feels like home.</p>
+                    <p>You're not just my Valentine—you're my heart, my calm in chaos, and my forever. Thank you for loving me so gently and so deeply. I'm endlessly grateful for you, today and always.</p>
+                    <p>Happy Valentine's Day, my love. 💖</p>
+                </div>
+                <p class="letter-signature">Forever yours,<br>Karan ❤️</p>
+            </div>
+            <div class="final-buttons">
+                <button class="cta-button seal-button" onclick="sealLetter()" data-testid="seal-letter-btn">Seal It 💌</button>
+                <button class="cta-button restart-button" onclick="restartJourney()" data-testid="restart-btn">Restart ↻</button>
+            </div>
+            <div class="sealed-message" id="sealedMessage" data-testid="sealed-message">
+                <h3>Letter Sealed! 💕</h3>
+                <p>This moment is now saved in our hearts forever...</p>
+            </div>
+        </div>
+    </section>
+
+    <script src="valentine-script.js"></script>
+</body>
+</html>

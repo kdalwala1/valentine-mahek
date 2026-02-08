@@ -15,10 +15,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // 🎼 Start background music with smooth fade
   bgMusic = document.getElementById("bgMusic");
-  if (bgMusic && allowBgMusic) {
-    bgMusic.loop = true;
-    fadeInAudio(bgMusic);
-  }
+if (bgMusic) {
+  bgMusic.loop = true;
+  fadeInAudio(bgMusic);
+}
 });
 
 // Create floating petals animation

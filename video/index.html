@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Just For You 💖</title>
+
+  <style>
+    body {
+      margin: 0;
+      background: black;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: white;
+      font-family: sans-serif;
+    }
+
+    video {
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+    }
+
+    #restartBtn {
+      display: none;
+      margin-top: 20px;
+      padding: 12px 24px;
+      background: pink;
+      color: black;
+      border: none;
+      border-radius: 30px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <video id="finalVideo" controls>
+    <source src="final-surprise.MP4" type="video/mp4" />
+  </video>
+
+  <button id="restartBtn" onclick="restart()">
+    Restart 💕
+  </button>
+
+  <script>
+    const video = document.getElementById("finalVideo");
+    const restartBtn = document.getElementById("restartBtn");
+
+    video.addEventListener("ended", () => {
+      restartBtn.style.display = "block";
+    });
+
+    function restart() {
+      window.location.href =
+        "https://kdalwala1.github.io/valentine-mahek/";
+    }
+  </script>
+
+</body>
+</html>

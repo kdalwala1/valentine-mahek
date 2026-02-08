@@ -69,27 +69,26 @@ function navigateToPage(pageId) {
     const targetPage = document.getElementById(pageId);
     if (targetPage) {
         targetPage.classList.add('active');
-        
-        // Initialize specific page features
-        if (pageId === 'memory-game') {
-            initializeMemoryGame();
-        }
-// 🎵 Music control with smooth fade
+
+      // 🎵 Background music smooth control
 if (pageId === "songs") {
-  // Fade out background music
+  allowBgMusic = false;
   fadeOutAudio(bgMusic);
 
   setupSongs();
   playSongSequence();
 } else {
-  // Stop cassette songs
   stopAllSongs();
 
-  // Fade background music back in
-  if (bgMusic) {
+  allowBgMusic = true;
+  if (bgMusic && bgMusic.paused) {
     fadeInAudio(bgMusic);
   }
 }
+        // Initialize specific page features
+        if (pageId === 'memory-game') {
+            initializeMemoryGame();
+        }
         // Animate polaroids when Moments page opens
 if (pageId === "moments") {
   animatePolaroids();

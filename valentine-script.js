@@ -67,6 +67,8 @@ function navigateToPage(pageId) {
 if (pageId === "songs") {
   setupSongs();
   playSongSequence();
+} else {
+  stopAllSongs();
 }
         // Animate polaroids when Moments page opens
 if (pageId === "moments") {

@@ -248,9 +248,17 @@ function checkMatch() {
 }
 
 function showWinMessage() {
-    const winMessage = document.getElementById('gameWin');
-    document.getElementById('finalMoves').textContent = moves;
-    winMessage.classList.add('show');
+  const winMessage = document.getElementById("gameWin");
+  const movesText = document.getElementById("finalMoves");
+  const nextBtn = document.getElementById("gameNextBtn");
+
+  movesText.textContent = moves;
+  winMessage.classList.add("show");
+
+  // Show Continue button ONLY after winning
+  setTimeout(() => {
+    nextBtn.style.display = "block";
+  }, 800);
 }
 
 // Final letter functions

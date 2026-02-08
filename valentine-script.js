@@ -292,7 +292,10 @@ function createConfetti() {
         }, 5000);
     }
 }
-
+function goToVideo() {
+  window.location.href =
+    "https://kdalwala1.github.io/valentine-mahek/video/";
+}
 function restartJourney() {
     // Reset to loading page
     navigateToPage('loading');

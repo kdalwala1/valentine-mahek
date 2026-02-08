@@ -1,5 +1,9 @@
 // Valentine Website JavaScript
 
+// 🎵 Music sequence variables
+let currentSongIndex = 0;
+let songs = [];
+
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
     initializePetals();
@@ -59,6 +63,11 @@ function navigateToPage(pageId) {
         if (pageId === 'memory-game') {
             initializeMemoryGame();
         }
+        // Auto start music when Songs page opens
+if (pageId === "songs") {
+  setupSongs();
+  playSongSequence();
+}
     }
     
     // Close explore overlay if open
@@ -299,6 +308,38 @@ function createConfetti() {
             confetti.remove();
         }, 5000);
     }
+}
+
+// 🎵 MUSIC SEQUENCE FUNCTIONS
+function setupSongs() {
+  songs = [
+    document.getElementById("song1"),
+    document.getElementById("song2"),
+    document.getElementById("song3")
+  ];
+}
+
+function playSongSequence() {
+  // Stop all songs first
+  songs.forEach(song => {
+    song.pause();
+    song.currentTime = 0;
+  });
+
+  currentSongIndex = 0;
+  playCurrentSong();
+}
+
+function playCurrentSong() {
+  const song = songs[currentSongIndex];
+  if (!song) return;
+
+  song.play().catch(() => {});
+
+  song.onended = () => {
+    currentSongIndex++;
+    playCurrentSong();
+  };
 }
 function goToVideo() {
   window.location.href =

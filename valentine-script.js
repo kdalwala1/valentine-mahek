@@ -69,17 +69,22 @@ function navigateToPage(pageId) {
     if (targetPage) {
         targetPage.classList.add('active');
 
-      // 🎵 Background music smooth control
+     // 🎵 Background music control
 if (pageId === "songs") {
-  allowBgMusic = false;
-  fadeOutAudio(bgMusic);
+  // Fade out & STOP background music
+  if (bgMusic) {
+    fadeOutAudio(bgMusic);
+  }
 
+  // Start cassette songs
   setupSongs();
   playSongSequence();
+
 } else {
+  // Stop cassette songs when leaving Songs page
   stopAllSongs();
 
-  allowBgMusic = true;
+  // Resume background music smoothly
   if (bgMusic && bgMusic.paused) {
     fadeInAudio(bgMusic);
   }

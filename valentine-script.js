@@ -378,37 +378,7 @@ function stopAllSongs() {
 
   currentSongIndex = 0;
 }
-// 🎵 Smooth audio fade utilities
-function fadeInAudio(audio, targetVolume = 0.4, duration = 1000) {
-  if (!audio) return;
 
-  audio.volume = 0;
-  audio.play().catch(() => {});
-
-  const step = targetVolume / (duration / 50);
-  const fade = setInterval(() => {
-    if (audio.volume < targetVolume) {
-      audio.volume = Math.min(audio.volume + step, targetVolume);
-    } else {
-      clearInterval(fade);
-    }
-  }, 50);
-}
-
-function fadeOutAudio(audio, duration = 800) {
-  if (!audio) return;
-
-  const step = audio.volume / (duration / 50);
-  const fade = setInterval(() => {
-    if (audio.volume > step) {
-      audio.volume -= step;
-    } else {
-      audio.volume = 0;
-      audio.pause();
-      clearInterval(fade);
-    }
-  }, 50);
-}
 function goToVideo() {
   fadeOutAudio(bgMusic);
 
@@ -449,6 +419,37 @@ function restartJourney() {
     setTimeout(() => {
         startLoadingAnimation();
     }, 500);
+}
+// 🎵 Smooth audio fade utilities
+function fadeInAudio(audio, targetVolume = 0.4, duration = 1000) {
+  if (!audio) return;
+
+  audio.volume = 0;
+  audio.play().catch(() => {});
+
+  const step = targetVolume / (duration / 50);
+  const fade = setInterval(() => {
+    if (audio.volume < targetVolume) {
+      audio.volume = Math.min(audio.volume + step, targetVolume);
+    } else {
+      clearInterval(fade);
+    }
+  }, 50);
+}
+
+function fadeOutAudio(audio, duration = 800) {
+  if (!audio) return;
+
+  const step = audio.volume / (duration / 50);
+  const fade = setInterval(() => {
+    if (audio.volume > step) {
+      audio.volume -= step;
+    } else {
+      audio.volume = 0;
+      audio.pause();
+      clearInterval(fade);
+    }
+  }, 50);
 }
 
 // Instructions for updating content:

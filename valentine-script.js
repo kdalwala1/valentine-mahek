@@ -3,17 +3,20 @@
 // 🎵 Music sequence variables
 let currentSongIndex = 0;
 let songs = [];
+// 🎼 Background music control
+let bgMusic;
+let allowBgMusic = true;
 
 // Initialize on page load
-// 🎼 Background music reference
-let bgMusic;
+
 document.addEventListener('DOMContentLoaded', function() {
   initializePetals();
   startLoadingAnimation();
   setupHamburgerMenu();
 
+  // 🎼 Start background music with smooth fade
   bgMusic = document.getElementById("bgMusic");
-  if (bgMusic) {
+  if (bgMusic && allowBgMusic) {
     bgMusic.loop = true;
     fadeInAudio(bgMusic);
   }

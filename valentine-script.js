@@ -347,6 +347,16 @@ function playCurrentSong() {
     playCurrentSong();
   };
 }
+function stopAllSongs() {
+  if (!songs || songs.length === 0) return;
+
+  songs.forEach(song => {
+    song.pause();
+    song.currentTime = 0;
+  });
+
+  currentSongIndex = 0;
+}
 function goToVideo() {
   window.location.href =
     "https://kdalwala1.github.io/valentine-mahek/video/";

@@ -5,10 +5,20 @@ let currentSongIndex = 0;
 let songs = [];
 
 // Initialize on page load
+// 🎼 Background music reference
+let bgMusic;
 document.addEventListener('DOMContentLoaded', function() {
-    initializePetals();
-    startLoadingAnimation();
-    setupHamburgerMenu();
+  initializePetals();
+  startLoadingAnimation();
+  setupHamburgerMenu();
+
+  // 🎼 Start background music (looping)
+  bgMusic = document.getElementById("bgMusic");
+  if (bgMusic) {
+    bgMusic.volume = 0.4;
+    bgMusic.loop = true;   // ✅ force loop
+    bgMusic.play().catch(() => {});
+  }
 });
 
 // Create floating petals animation
@@ -63,12 +73,21 @@ function navigateToPage(pageId) {
         if (pageId === 'memory-game') {
             initializeMemoryGame();
         }
-        // Auto start music when Songs page opens
+// 🎵 Music control
 if (pageId === "songs") {
+  // Stop background music on Songs page
+  if (bgMusic) bgMusic.pause();
+
   setupSongs();
   playSongSequence();
 } else {
+  // Stop cassette songs on other pages
   stopAllSongs();
+
+  // Resume background music (looped)
+  if (bgMusic && pageId !== "final-video") {
+    bgMusic.play().catch(() => {});
+  }
 }
         // Animate polaroids when Moments page opens
 if (pageId === "moments") {
@@ -360,6 +379,11 @@ function stopAllSongs() {
   currentSongIndex = 0;
 }
 function goToVideo() {
+  if (bgMusic) {
+    bgMusic.pause();
+    bgMusic.currentTime = 0;
+  }
+
   window.location.href =
     "https://kdalwala1.github.io/valentine-mahek/video/";
 }

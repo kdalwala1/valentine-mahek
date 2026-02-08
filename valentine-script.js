@@ -4,8 +4,7 @@
 let currentSongIndex = 0;
 let songs = [];
 // 🎼 Background music control
-let bgMusic;
-let allowBgMusic = true;
+let bgMusic = null;
 
 // Initialize on page load
 

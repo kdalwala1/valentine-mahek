@@ -68,6 +68,10 @@ if (pageId === "songs") {
   setupSongs();
   playSongSequence();
 }
+        // Animate polaroids when Moments page opens
+if (pageId === "moments") {
+  animatePolaroids();
+}
     }
     
     // Close explore overlay if open
@@ -344,6 +348,15 @@ function playCurrentSong() {
 function goToVideo() {
   window.location.href =
     "https://kdalwala1.github.io/valentine-mahek/video/";
+}
+function animatePolaroids() {
+  const polaroids = document.querySelectorAll(".polaroid");
+
+  polaroids.forEach((polaroid, index) => {
+    setTimeout(() => {
+      polaroid.classList.add("show");
+    }, index * 400);
+  });
 }
 function restartJourney() {
     // Reset to loading page

@@ -279,15 +279,17 @@ function sealLetter() {
   const letterCard = document.getElementById("finalLetterCard");
   const sealedMessage = document.getElementById("sealedMessage");
 
-  // Hide the letter card
+  // Hide the letter
   if (letterCard) {
     letterCard.style.display = "none";
   }
 
-  // Show sealed message
-  sealedMessage.classList.add("show");
+  // Show sealed message + button
+  if (sealedMessage) {
+    sealedMessage.classList.add("show");
+  }
 
-  // Confetti
+  // Confetti effect
   createConfetti();
 }
 

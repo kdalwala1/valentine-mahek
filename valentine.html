@@ -170,7 +170,14 @@
                 <h3>You Won! 🎉</h3>
                 <p>You completed the game in <span id="finalMoves">0</span> moves!</p>
             </div>
-            <button class="cta-button" onclick="navigateToPage('moments')" data-testid="game-continue-btn">Continue →</button>
+            <button
+  class="cta-button"
+  id="gameNextBtn"
+  style="display:none;"
+  onclick="navigateToPage('moments')"
+>
+  Continue →
+</button>
         </div>
     </section>
 

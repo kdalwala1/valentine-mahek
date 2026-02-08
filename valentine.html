@@ -282,27 +282,39 @@
         </div>
     </section>
 
-    <!-- Page 10: Final Love Letter -->
-    <section class="page" id="final-letter" data-testid="final-letter-page">
-        <div class="final-letter-content">
-            <div class="final-letter-card">
-                <h2 class="letter-heading">My Love, 💕</h2>
-                <div class="letter-text">
-                    <p>Loving you is the easiest and most beautiful thing I've ever known. You have a way of making my world feel lighter, warmer, and more meaningful just by being in it. Every smile of yours feels like a promise, every moment with you feels like home.</p>
-                    <p>You're not just my Valentine—you're my heart, my calm in chaos, and my forever. Thank you for loving me so gently and so deeply. I'm endlessly grateful for you, today and always.</p>
-                    <p>Happy Valentine's Day, my love. 💖</p>
-                </div>
-                <p class="letter-signature">Forever yours,<br>Karan ❤️</p>
-            </div>
-            <div class="final-buttons">
-                <button class="cta-button seal-button" onclick="sealLetter()" data-testid="seal-letter-btn">Seal It 💌</button>
-            </div>
-            <div class="sealed-message" id="sealedMessage" data-testid="sealed-message">
-                <h3>Letter Sealed! 💕</h3>
-                <p>This moment is now saved in our hearts forever...</p>
-            </div>
-        </div>
-    </section>
+<!-- Page 10: Final Love Letter -->
+<section class="page" id="final-letter" data-testid="final-letter-page">
+  <div class="final-letter-content">
+
+    <div class="final-letter-card" id="finalLetterCard">
+      <h2 class="letter-heading">My Love, 💕</h2>
+
+      <div class="letter-text">
+        <p>Loving you is the easiest and most beautiful thing I've ever known.</p>
+        <p>You're not just my Valentine—you’re my calm, my home, my forever.</p>
+        <p>Happy Valentine’s Day, my love. 💖</p>
+      </div>
+
+      <p class="letter-signature">
+        Forever yours,<br>Karan ❤️
+      </p>
+    </div>
+
+    <button class="cta-button seal-button" onclick="sealLetter()">
+      Seal It 💌
+    </button>
+
+    <div class="sealed-message" id="sealedMessage" style="display:none;">
+      <h3>Letter Sealed 💕</h3>
+      <p>This moment is now saved forever…</p>
+
+      <button class="cta-button" onclick="goToVideo()">
+        One Last Surprise 🎥
+      </button>
+    </div>
+
+  </div>
+</section>
 
     <script src="valentine-script.js"></script>
 </body>

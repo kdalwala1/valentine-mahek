@@ -12,12 +12,10 @@ document.addEventListener('DOMContentLoaded', function() {
   startLoadingAnimation();
   setupHamburgerMenu();
 
-  // 🎼 Start background music (looping)
   bgMusic = document.getElementById("bgMusic");
   if (bgMusic) {
-    bgMusic.volume = 0.4;
-    bgMusic.loop = true;   // ✅ force loop
-    bgMusic.play().catch(() => {});
+    bgMusic.loop = true;
+    fadeInAudio(bgMusic);
   }
 });
 
@@ -73,20 +71,20 @@ function navigateToPage(pageId) {
         if (pageId === 'memory-game') {
             initializeMemoryGame();
         }
-// 🎵 Music control
+// 🎵 Music control with smooth fade
 if (pageId === "songs") {
-  // Stop background music on Songs page
-  if (bgMusic) bgMusic.pause();
+  // Fade out background music
+  fadeOutAudio(bgMusic);
 
   setupSongs();
   playSongSequence();
 } else {
-  // Stop cassette songs on other pages
+  // Stop cassette songs
   stopAllSongs();
 
-  // Resume background music (looped)
-  if (bgMusic && pageId !== "final-video") {
-    bgMusic.play().catch(() => {});
+  // Fade background music back in
+  if (bgMusic) {
+    fadeInAudio(bgMusic);
   }
 }
         // Animate polaroids when Moments page opens
@@ -378,14 +376,44 @@ function stopAllSongs() {
 
   currentSongIndex = 0;
 }
-function goToVideo() {
-  if (bgMusic) {
-    bgMusic.pause();
-    bgMusic.currentTime = 0;
-  }
+// 🎵 Smooth audio fade utilities
+function fadeInAudio(audio, targetVolume = 0.4, duration = 1000) {
+  if (!audio) return;
 
-  window.location.href =
-    "https://kdalwala1.github.io/valentine-mahek/video/";
+  audio.volume = 0;
+  audio.play().catch(() => {});
+
+  const step = targetVolume / (duration / 50);
+  const fade = setInterval(() => {
+    if (audio.volume < targetVolume) {
+      audio.volume = Math.min(audio.volume + step, targetVolume);
+    } else {
+      clearInterval(fade);
+    }
+  }, 50);
+}
+
+function fadeOutAudio(audio, duration = 800) {
+  if (!audio) return;
+
+  const step = audio.volume / (duration / 50);
+  const fade = setInterval(() => {
+    if (audio.volume > step) {
+      audio.volume -= step;
+    } else {
+      audio.volume = 0;
+      audio.pause();
+      clearInterval(fade);
+    }
+  }, 50);
+}
+function goToVideo() {
+  fadeOutAudio(bgMusic);
+
+  setTimeout(() => {
+    window.location.href =
+      "https://kdalwala1.github.io/valentine-mahek/video/";
+  }, 900);
 }
 function animatePolaroids() {
   const polaroids = document.querySelectorAll(".polaroid");

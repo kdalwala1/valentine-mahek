@@ -255,11 +255,19 @@ function showWinMessage() {
 
 // Final letter functions
 function sealLetter() {
-    const sealedMessage = document.getElementById('sealedMessage');
-    sealedMessage.classList.add('show');
-    
-    // Create confetti effect
-    createConfetti();
+  const letterCard = document.getElementById("finalLetterCard");
+  const sealedMessage = document.getElementById("sealedMessage");
+
+  // Hide the letter card
+  if (letterCard) {
+    letterCard.style.display = "none";
+  }
+
+  // Show sealed message
+  sealedMessage.classList.add("show");
+
+  // Confetti
+  createConfetti();
 }
 
 function createConfetti() {

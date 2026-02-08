@@ -455,6 +455,13 @@ function fadeOutAudio(audio, duration = 800) {
     }
   }, 50);
 }
+// 🔇 Stop background music when page/tab is closed
+window.addEventListener("beforeunload", () => {
+  if (bgMusic) {
+    bgMusic.pause();
+    bgMusic.currentTime = 0;
+  }
+});
 
 // Instructions for updating content:
 /*

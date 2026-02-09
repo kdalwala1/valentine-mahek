@@ -6,7 +6,6 @@ let songs = [];
 
 // 🎵 Background music
 let bgMusic = null;
-let bgMusicEnabled = true; // <-- IMPORTANT
 
 // Initialize on page load
 

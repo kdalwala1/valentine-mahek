@@ -7,28 +7,27 @@ let currentSongIndex = 0;
 let songs = [];
 let bgMusic = null;
 let userInteracted = false;
+let isOnSongsPage = false;
 
 // ===============================
-// AUDIO UNLOCK (REQUIRED BY BROWSER)
+// AUDIO UNLOCK (REQUIRED)
 // ===============================
 function unlockAudio() {
   if (userInteracted) return;
   userInteracted = true;
 
-  if (bgMusic) {
+  if (bgMusic && !isOnSongsPage) {
     bgMusic.volume = 0;
     bgMusic.play().catch(() => {});
     fadeInAudio(bgMusic);
   }
 }
-
-// First user interaction unlocks audio
 document.addEventListener("click", unlockAudio, { once: true });
 
 // ===============================
 // INITIAL LOAD
 // ===============================
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
   initializePetals();
   startLoadingAnimation();
   setupHamburgerMenu();
@@ -41,82 +40,43 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // ===============================
-// PETALS
-// ===============================
-function initializePetals() {
-  const petalsContainer = document.getElementById("petalsContainer");
-  if (!petalsContainer) return;
-
-  const petalEmojis = ["🌸", "🌺", "💖", "💕", "🌹", "💗"];
-
-  for (let i = 0; i < 15; i++) {
-    const petal = document.createElement("div");
-    petal.className = "petal";
-    petal.textContent =
-      petalEmojis[Math.floor(Math.random() * petalEmojis.length)];
-    petal.style.left = Math.random() * 100 + "%";
-    petal.style.animationDuration = Math.random() * 3 + 5 + "s";
-    petal.style.animationDelay = Math.random() * 5 + "s";
-    petalsContainer.appendChild(petal);
-  }
-}
-
-// ===============================
-// LOADING
-// ===============================
-function startLoadingAnimation() {
-  const progressFill = document.getElementById("progressFill");
-  if (!progressFill) return;
-
-  progressFill.style.width = "0%";
-  let progress = 0;
-
-  const interval = setInterval(() => {
-    progress += 2;
-    progressFill.style.width = progress + "%";
-
-    if (progress >= 100) {
-      clearInterval(interval);
-      setTimeout(() => navigateToPage("proposal"), 500);
-    }
-  }, 60);
-}
-
-// ===============================
-// NAVIGATION + MUSIC CONTROL
+// NAVIGATION
 // ===============================
 function navigateToPage(pageId) {
   document.querySelectorAll(".page").forEach(p =>
     p.classList.remove("active")
   );
 
-  const targetPage = document.getElementById(pageId);
-  if (!targetPage) return;
-  targetPage.classList.add("active");
+  const page = document.getElementById(pageId);
+  if (!page) return;
+  page.classList.add("active");
 
-  // ---------- MUSIC LOGIC ----------
+  // ---------- MUSIC CONTROL ----------
   if (pageId === "songs") {
-    // Stop BG music
-    if (bgMusic) fadeOutAudio(bgMusic);
+    isOnSongsPage = true;
+
+    // HARD STOP BG MUSIC
+    if (bgMusic) {
+      fadeOutAudio(bgMusic);
+      bgMusic.pause();
+      bgMusic.currentTime = 0;
+    }
 
     setupSongs();
-
-    // Cassette autoplay ONLY after user interaction
-    if (userInteracted) {
-      playSongSequence();
-    }
+    if (userInteracted) playSongSequence();
   } else {
     // Leaving songs page
+    isOnSongsPage = false;
     stopAllSongs();
 
-    // Resume BG music
     if (bgMusic && userInteracted) {
+      bgMusic.volume = 0;
       bgMusic.play().catch(() => {});
       fadeInAudio(bgMusic);
     }
   }
 
-  // ---------- PAGE SETUPS ----------
+  // ---------- PAGE INIT ----------
   if (pageId === "loading") startLoadingAnimation();
   if (pageId === "envelope") setupEnvelope();
   if (pageId === "memory-game") initializeMemoryGame();
@@ -126,19 +86,37 @@ function navigateToPage(pageId) {
 }
 
 // ===============================
-// HAMBURGER MENU
+// LOADING
+// ===============================
+function startLoadingAnimation() {
+  const bar = document.getElementById("progressFill");
+  if (!bar) return;
+
+  bar.style.width = "0%";
+  let p = 0;
+
+  const i = setInterval(() => {
+    p += 2;
+    bar.style.width = p + "%";
+    if (p >= 100) {
+      clearInterval(i);
+      setTimeout(() => navigateToPage("proposal"), 500);
+    }
+  }, 60);
+}
+
+// ===============================
+// HAMBURGER
 // ===============================
 function setupHamburgerMenu() {
   document.getElementById("hamburger")?.addEventListener("click", () =>
     document.getElementById("exploreOverlay")?.classList.add("active")
   );
-
   document.getElementById("closeExplore")?.addEventListener("click", () =>
     document.getElementById("exploreOverlay")?.classList.remove("active")
   );
-
-  document.querySelectorAll(".explore-item").forEach(item => {
-    item.onclick = () => navigateToPage(item.dataset.page);
+  document.querySelectorAll(".explore-item").forEach(i => {
+    i.onclick = () => navigateToPage(i.dataset.page);
   });
 }
 
@@ -146,15 +124,14 @@ function setupHamburgerMenu() {
 // ENVELOPE
 // ===============================
 function setupEnvelope() {
-  const envelope = document.getElementById("envelope");
-  const envelopeHint = document.getElementById("envelopeHint");
+  const e = document.getElementById("envelope");
+  const h = document.getElementById("envelopeHint");
+  if (!e || !h) return;
 
-  if (!envelope || !envelopeHint) return;
-
-  envelope.onclick = () => {
-    envelope.classList.toggle("open");
-    if (envelope.classList.contains("open")) {
-      envelopeHint.textContent = "Beautiful! 💕";
+  e.onclick = () => {
+    e.classList.toggle("open");
+    if (e.classList.contains("open")) {
+      h.textContent = "Beautiful! 💕";
       setTimeout(() => navigateToPage("love-letter"), 2000);
     }
   };
@@ -178,35 +155,100 @@ function playSongSequence() {
 }
 
 function playCurrentSong() {
-  const song = songs[currentSongIndex];
-  if (!song) return;
+  const s = songs[currentSongIndex];
+  if (!s) return;
 
-  song.play().catch(() => {});
-  song.onended = () => {
+  s.play().catch(() => {});
+  s.onended = () => {
     currentSongIndex++;
     playCurrentSong();
   };
 }
 
 function stopAllSongs() {
-  songs.forEach(song => {
-    song.pause();
-    song.currentTime = 0;
+  songs.forEach(s => {
+    s.pause();
+    s.currentTime = 0;
   });
   currentSongIndex = 0;
+}
+
+// ===============================
+// MEMORY GAME (FULLY RESTORED)
+// ===============================
+let flippedCards = [];
+let matchedPairs = 0;
+let moves = 0;
+let canFlip = true;
+
+function initializeMemoryGame() {
+  const board = document.getElementById("gameBoard");
+  if (!board) return;
+
+  flippedCards = [];
+  matchedPairs = 0;
+  moves = 0;
+  canFlip = true;
+
+  document.getElementById("moves").textContent = "0";
+  document.getElementById("matches").textContent = "0";
+  document.getElementById("gameWin").classList.remove("show");
+
+  const emojis = ["💕","💖","💗","💘","💝","💞"];
+  const cards = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
+
+  board.innerHTML = "";
+  cards.forEach(e => {
+    const c = document.createElement("div");
+    c.className = "game-card";
+    c.onclick = () => flipCard(c, e);
+    board.appendChild(c);
+  });
+}
+
+function flipCard(card, emoji) {
+  if (!canFlip || card.textContent) return;
+
+  card.textContent = emoji;
+  flippedCards.push(card);
+
+  if (flippedCards.length === 2) {
+    canFlip = false;
+    moves++;
+    document.getElementById("moves").textContent = moves;
+    setTimeout(checkMatch, 800);
+  }
+}
+
+function checkMatch() {
+  const [a, b] = flippedCards;
+
+  if (a.textContent === b.textContent) {
+    matchedPairs++;
+    document.getElementById("matches").textContent = matchedPairs;
+
+    if (matchedPairs === 6) {
+      document.getElementById("gameWin").classList.add("show");
+    }
+  } else {
+    a.textContent = "";
+    b.textContent = "";
+  }
+
+  flippedCards = [];
+  canFlip = true;
 }
 
 // ===============================
 // FINAL LETTER + VIDEO
 // ===============================
 function sealLetter() {
-  const letterCard = document.getElementById("finalLetterCard");
-  const sealedMessage = document.getElementById("sealedMessage");
+  const c = document.getElementById("finalLetterCard");
+  const m = document.getElementById("sealedMessage");
+  if (!c || !m) return;
 
-  if (!letterCard || !sealedMessage) return;
-
-  letterCard.style.display = "none";
-  sealedMessage.classList.add("show");
+  c.style.display = "none";
+  m.classList.add("show");
   createConfetti();
 }
 
@@ -220,6 +262,18 @@ function goToVideo() {
   }, 900);
 }
 
+// ===============================
+// POLAROIDS
+// ===============================
+function animatePolaroids() {
+  document.querySelectorAll(".polaroid").forEach((p, i) =>
+    setTimeout(() => p.classList.add("show"), i * 400)
+  );
+}
+
+// ===============================
+// CONFETTI
+// ===============================
 function createConfetti() {
   for (let i = 0; i < 20; i++) {
     const c = document.createElement("div");
@@ -235,35 +289,26 @@ function createConfetti() {
 }
 
 // ===============================
-// POLAROIDS
+// AUDIO FADES
 // ===============================
-function animatePolaroids() {
-  document.querySelectorAll(".polaroid").forEach((p, i) => {
-    setTimeout(() => p.classList.add("show"), i * 400);
-  });
-}
-
-// ===============================
-// AUDIO FADE HELPERS
-// ===============================
-function fadeInAudio(audio, target = 0.4, duration = 1000) {
-  if (!audio) return;
-  audio.volume = 0;
-  const step = target / (duration / 50);
-  const fade = setInterval(() => {
-    audio.volume = Math.min(audio.volume + step, target);
-    if (audio.volume >= target) clearInterval(fade);
+function fadeInAudio(a, t = 0.4, d = 1000) {
+  if (!a) return;
+  a.volume = 0;
+  const s = t / (d / 50);
+  const i = setInterval(() => {
+    a.volume = Math.min(a.volume + s, t);
+    if (a.volume >= t) clearInterval(i);
   }, 50);
 }
 
-function fadeOutAudio(audio, duration = 800) {
-  if (!audio) return;
-  const step = audio.volume / (duration / 50);
-  const fade = setInterval(() => {
-    audio.volume = Math.max(audio.volume - step, 0);
-    if (audio.volume === 0) {
-      audio.pause();
-      clearInterval(fade);
+function fadeOutAudio(a, d = 800) {
+  if (!a) return;
+  const s = a.volume / (d / 50);
+  const i = setInterval(() => {
+    a.volume = Math.max(a.volume - s, 0);
+    if (a.volume === 0) {
+      a.pause();
+      clearInterval(i);
     }
   }, 50);
 }

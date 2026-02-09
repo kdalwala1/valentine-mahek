@@ -47,6 +47,11 @@ function navigateToPage(pageId) {
   const page = document.getElementById(pageId);
   if (!page) return;
   page.classList.add("active");
+  
+  // ========= MEMORY GAME =========
+if (pageId === "memory-game") {
+  initializeMemoryGame();
+}
 
   // ---------- SONG PAGE ----------
   if (pageId === "songs") {

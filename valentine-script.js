@@ -217,22 +217,24 @@ function toggleSong(n) {
 }
 
 // ===============================
-// MEMORY GAME (FINAL FIX)
+// MEMORY GAME (FINAL – STABLE)
 // ===============================
-let flippedCards = [];
-let matchedPairs = 0;
-let moves = 0;
+let firstCard = null;
+let secondCard = null;
 let lockBoard = false;
+let matches = 0;
+let moves = 0;
 
 function initializeMemoryGame() {
   const board = document.getElementById("gameBoard");
   if (!board) return;
 
-  // Reset state
-  flippedCards = [];
-  matchedPairs = 0;
-  moves = 0;
+  // reset
+  firstCard = null;
+  secondCard = null;
   lockBoard = false;
+  matches = 0;
+  moves = 0;
 
   document.getElementById("moves").textContent = "0";
   document.getElementById("matches").textContent = "0";
@@ -247,48 +249,53 @@ function initializeMemoryGame() {
     const card = document.createElement("div");
     card.className = "game-card";
     card.dataset.emoji = emoji;
-    card.dataset.matched = "false";
-    card.onclick = () => flipCard(card);
+    card.dataset.flipped = "false";
+    card.onclick = () => handleCardClick(card);
     board.appendChild(card);
   });
 }
 
-function flipCard(card) {
+function handleCardClick(card) {
   if (lockBoard) return;
-  if (card.dataset.matched === "true") return;
-  if (card.textContent) return;
+  if (card.dataset.flipped === "true") return;
 
   card.textContent = card.dataset.emoji;
-  flippedCards.push(card);
+  card.dataset.flipped = "true";
 
-  if (flippedCards.length === 2) {
-    lockBoard = true;
-    moves++;
-    document.getElementById("moves").textContent = moves;
-    setTimeout(checkMatch, 800);
+  if (!firstCard) {
+    firstCard = card;
+    return;
   }
+
+  secondCard = card;
+  lockBoard = true;
+  moves++;
+  document.getElementById("moves").textContent = moves;
+
+  setTimeout(checkForMatch, 700);
 }
 
-function checkMatch() {
-  const [card1, card2] = flippedCards;
+function checkForMatch() {
+  if (!firstCard || !secondCard) return;
 
-  if (card1.dataset.emoji === card2.dataset.emoji) {
-    card1.dataset.matched = "true";
-    card2.dataset.matched = "true";
-    matchedPairs++;
-    document.getElementById("matches").textContent = matchedPairs;
+  if (firstCard.dataset.emoji === secondCard.dataset.emoji) {
+    matches++;
+    document.getElementById("matches").textContent = matches;
 
-    if (matchedPairs === 6) {
+    if (matches === 6) {
       setTimeout(() => {
         document.getElementById("gameWin").classList.add("show");
-      }, 500);
+      }, 400);
     }
   } else {
-    card1.textContent = "";
-    card2.textContent = "";
+    firstCard.textContent = "";
+    secondCard.textContent = "";
+    firstCard.dataset.flipped = "false";
+    secondCard.dataset.flipped = "false";
   }
 
-  flippedCards = [];
+  firstCard = null;
+  secondCard = null;
   lockBoard = false;
 }
 

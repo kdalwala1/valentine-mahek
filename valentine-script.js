@@ -217,7 +217,7 @@ function toggleSong(n) {
 }
 
 // ===============================
-// MEMORY GAME (FINAL – MATCHES YOUR HTML)
+// SIMPLE WORKING MEMORY GAME
 // ===============================
 let firstCard = null;
 let secondCard = null;
@@ -226,9 +226,10 @@ let matches = 0;
 let moves = 0;
 
 function initializeMemoryGame() {
-  const board = document.getElementById("gameBoard");
-  if (!board) return;
+  const gameBoard = document.getElementById("gameBoard");
+  if (!gameBoard) return;
 
+  // Reset state
   firstCard = null;
   secondCard = null;
   lockBoard = false;
@@ -240,27 +241,30 @@ function initializeMemoryGame() {
   document.getElementById("finalMoves").textContent = "0";
   document.getElementById("gameWin").classList.remove("show");
 
-  const emojis = ["💕", "💖", "💗", "💘", "💝", "💞"];
-  const cards = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
+  const nextBtn = document.getElementById("gameNextBtn");
+  if (nextBtn) nextBtn.style.display = "none";
 
-  board.innerHTML = "";
+  const emojis = ["💕", "💖", "💗", "💘", "💝", "💞"];
+  const cards = [...emojis, ...emojis].sort(() => 0.5 - Math.random());
+
+  gameBoard.innerHTML = "";
 
   cards.forEach((emoji) => {
     const card = document.createElement("div");
     card.className = "game-card";
     card.dataset.emoji = emoji;
-    card.dataset.flipped = "false";
-    card.onclick = () => handleCardClick(card);
-    board.appendChild(card);
+    card.innerHTML = "";
+    card.addEventListener("click", () => flipCard(card));
+    gameBoard.appendChild(card);
   });
 }
 
-function handleCardClick(card) {
+function flipCard(card) {
   if (lockBoard) return;
-  if (card.dataset.flipped === "true") return;
+  if (card.classList.contains("flipped")) return;
 
-  card.textContent = card.dataset.emoji;
-  card.dataset.flipped = "true";
+  card.classList.add("flipped");
+  card.innerHTML = card.dataset.emoji;
 
   if (!firstCard) {
     firstCard = card;
@@ -272,29 +276,41 @@ function handleCardClick(card) {
   moves++;
   document.getElementById("moves").textContent = moves;
 
-  setTimeout(checkForMatch, 700);
+  setTimeout(checkMatch, 800);
 }
 
-function checkForMatch() {
-  if (!firstCard || !secondCard) return;
-
+function checkMatch() {
   if (firstCard.dataset.emoji === secondCard.dataset.emoji) {
+    firstCard.classList.add("matched");
+    secondCard.classList.add("matched");
     matches++;
     document.getElementById("matches").textContent = matches;
 
     if (matches === 6) {
       document.getElementById("finalMoves").textContent = moves;
-      setTimeout(() => {
-        document.getElementById("gameWin").classList.add("show");
-      }, 400);
-    }
-  } else {
-    firstCard.textContent = "";
-    secondCard.textContent = "";
-    firstCard.dataset.flipped = "false";
-    secondCard.dataset.flipped = "false";
-  }
+      document.getElementById("gameWin").classList.add("show");
 
+      const nextBtn = document.getElementById("gameNextBtn");
+      if (nextBtn) {
+        setTimeout(() => {
+          nextBtn.style.display = "block";
+        }, 800);
+      }
+    }
+
+    resetTurn();
+  } else {
+    setTimeout(() => {
+      firstCard.classList.remove("flipped");
+      secondCard.classList.remove("flipped");
+      firstCard.innerHTML = "";
+      secondCard.innerHTML = "";
+      resetTurn();
+    }, 600);
+  }
+}
+
+function resetTurn() {
   firstCard = null;
   secondCard = null;
   lockBoard = false;

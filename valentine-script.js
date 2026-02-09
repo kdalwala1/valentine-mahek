@@ -3,8 +3,10 @@
 // 🎵 Music sequence variables
 let currentSongIndex = 0;
 let songs = [];
-// 🎼 Background music control
+
+// 🎵 Background music
 let bgMusic = null;
+let bgMusicEnabled = true; // <-- IMPORTANT
 
 // Initialize on page load
 

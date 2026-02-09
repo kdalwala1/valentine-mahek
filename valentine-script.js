@@ -1,11 +1,29 @@
 // Valentine Website JavaScript
 
-// 🎵 Music sequence variables
+// ===============================
+// GLOBAL VARIABLES
+// ===============================
 let currentSongIndex = 0;
 let songs = [];
-
-// 🎵 Background music
 let bgMusic = null;
+let userInteracted = false;
+
+// ===============================
+// AUDIO UNLOCK (REQUIRED BY BROWSER)
+// ===============================
+function unlockAudio() {
+  if (userInteracted) return;
+  userInteracted = true;
+
+  if (bgMusic) {
+    bgMusic.volume = 0;
+    bgMusic.play().catch(() => {});
+    fadeInAudio(bgMusic);
+  }
+}
+
+// First user interaction unlocks audio
+document.addEventListener("click", unlockAudio, { once: true });
 
 // ===============================
 // INITIAL LOAD
@@ -15,13 +33,10 @@ document.addEventListener("DOMContentLoaded", function () {
   startLoadingAnimation();
   setupHamburgerMenu();
 
-  // Background music (unchanged)
   bgMusic = document.getElementById("bgMusic");
   if (bgMusic) {
     bgMusic.loop = true;
     bgMusic.volume = 0;
-    bgMusic.play().catch(() => {});
-    fadeInAudio(bgMusic);
   }
 });
 
@@ -53,7 +68,9 @@ function startLoadingAnimation() {
   const progressFill = document.getElementById("progressFill");
   if (!progressFill) return;
 
+  progressFill.style.width = "0%";
   let progress = 0;
+
   const interval = setInterval(() => {
     progress += 2;
     progressFill.style.width = progress + "%";
@@ -66,10 +83,10 @@ function startLoadingAnimation() {
 }
 
 // ===============================
-// NAVIGATION
+// NAVIGATION + MUSIC CONTROL
 // ===============================
 function navigateToPage(pageId) {
-  document.querySelectorAll(".page").forEach((p) =>
+  document.querySelectorAll(".page").forEach(p =>
     p.classList.remove("active")
   );
 
@@ -77,13 +94,32 @@ function navigateToPage(pageId) {
   if (!targetPage) return;
   targetPage.classList.add("active");
 
-  // Envelope fix
+  // ---------- MUSIC LOGIC ----------
+  if (pageId === "songs") {
+    // Stop BG music
+    if (bgMusic) fadeOutAudio(bgMusic);
+
+    setupSongs();
+
+    // Cassette autoplay ONLY after user interaction
+    if (userInteracted) {
+      playSongSequence();
+    }
+  } else {
+    // Leaving songs page
+    stopAllSongs();
+
+    // Resume BG music
+    if (bgMusic && userInteracted) {
+      bgMusic.play().catch(() => {});
+      fadeInAudio(bgMusic);
+    }
+  }
+
+  // ---------- PAGE SETUPS ----------
+  if (pageId === "loading") startLoadingAnimation();
   if (pageId === "envelope") setupEnvelope();
-
-  // Memory game fix
   if (pageId === "memory-game") initializeMemoryGame();
-
-  // Polaroid animation
   if (pageId === "moments") animatePolaroids();
 
   document.getElementById("exploreOverlay")?.classList.remove("active");
@@ -93,24 +129,21 @@ function navigateToPage(pageId) {
 // HAMBURGER MENU
 // ===============================
 function setupHamburgerMenu() {
-  const hamburger = document.getElementById("hamburger");
-  const overlay = document.getElementById("exploreOverlay");
-  const close = document.getElementById("closeExplore");
-
-  hamburger?.addEventListener("click", () =>
-    overlay.classList.add("active")
-  );
-  close?.addEventListener("click", () =>
-    overlay.classList.remove("active")
+  document.getElementById("hamburger")?.addEventListener("click", () =>
+    document.getElementById("exploreOverlay")?.classList.add("active")
   );
 
-  document.querySelectorAll(".explore-item").forEach((item) => {
+  document.getElementById("closeExplore")?.addEventListener("click", () =>
+    document.getElementById("exploreOverlay")?.classList.remove("active")
+  );
+
+  document.querySelectorAll(".explore-item").forEach(item => {
     item.onclick = () => navigateToPage(item.dataset.page);
   });
 }
 
 // ===============================
-// ENVELOPE FIX
+// ENVELOPE
 // ===============================
 function setupEnvelope() {
   const envelope = document.getElementById("envelope");
@@ -128,98 +161,43 @@ function setupEnvelope() {
 }
 
 // ===============================
-// SONG PLAYER
+// CASSETTE MUSIC
 // ===============================
-let currentlyPlaying = null;
-
-function toggleSong(songNumber) {
-  const audio = document.getElementById("song" + songNumber);
-  if (!audio) return;
-
-  const button = audio.previousElementSibling;
-  const reels = audio
-    .closest(".cassette-card")
-    .querySelectorAll(".reel");
-
-  if (currentlyPlaying && currentlyPlaying !== audio) {
-    currentlyPlaying.pause();
-    currentlyPlaying.currentTime = 0;
-  }
-
-  if (audio.paused) {
-    audio.play();
-    button.textContent = "⏸ Pause";
-    reels.forEach((r) => r.classList.add("spinning"));
-    currentlyPlaying = audio;
-  } else {
-    audio.pause();
-    button.textContent = "▶ Play";
-    reels.forEach((r) => r.classList.remove("spinning"));
-    currentlyPlaying = null;
-  }
+function setupSongs() {
+  songs = [
+    document.getElementById("song1"),
+    document.getElementById("song2"),
+    document.getElementById("song3")
+  ].filter(Boolean);
 }
 
-// ===============================
-// MEMORY GAME FIX
-// ===============================
-let gameCards = [];
-let flippedCards = [];
-let matchedPairs = 0;
-let moves = 0;
-let canFlip = true;
+function playSongSequence() {
+  stopAllSongs();
+  currentSongIndex = 0;
+  playCurrentSong();
+}
 
-function initializeMemoryGame() {
-  const gameBoard = document.getElementById("gameBoard");
-  if (!gameBoard) return;
+function playCurrentSong() {
+  const song = songs[currentSongIndex];
+  if (!song) return;
 
-  matchedPairs = 0;
-  moves = 0;
-  flippedCards = [];
-  canFlip = true;
+  song.play().catch(() => {});
+  song.onended = () => {
+    currentSongIndex++;
+    playCurrentSong();
+  };
+}
 
-  document.getElementById("moves").textContent = "0";
-  document.getElementById("matches").textContent = "0";
-  document.getElementById("gameWin").classList.remove("show");
-
-  const emojis = ["💕", "💖", "💗", "💘", "💝", "💞"];
-  gameCards = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
-
-  gameBoard.innerHTML = "";
-  gameCards.forEach((emoji) => {
-    const card = document.createElement("div");
-    card.className = "game-card";
-    card.onclick = () => flipCard(card, emoji);
-    gameBoard.appendChild(card);
+function stopAllSongs() {
+  songs.forEach(song => {
+    song.pause();
+    song.currentTime = 0;
   });
-}
-
-function flipCard(card, emoji) {
-  if (!canFlip || card.textContent) return;
-
-  card.textContent = emoji;
-  flippedCards.push(card);
-
-  if (flippedCards.length === 2) {
-    canFlip = false;
-    setTimeout(checkMatch, 800);
-  }
-}
-
-function checkMatch() {
-  const [a, b] = flippedCards;
-  if (a.textContent === b.textContent) {
-    matchedPairs++;
-    document.getElementById("matches").textContent = matchedPairs;
-  } else {
-    a.textContent = "";
-    b.textContent = "";
-  }
-  flippedCards = [];
-  canFlip = true;
+  currentSongIndex = 0;
 }
 
 // ===============================
-// FINAL LETTER FIX
+// FINAL LETTER + VIDEO
 // ===============================
 function sealLetter() {
   const letterCard = document.getElementById("finalLetterCard");
@@ -230,6 +208,16 @@ function sealLetter() {
   letterCard.style.display = "none";
   sealedMessage.classList.add("show");
   createConfetti();
+}
+
+function goToVideo() {
+  stopAllSongs();
+  if (bgMusic) fadeOutAudio(bgMusic);
+
+  setTimeout(() => {
+    window.location.href =
+      "https://kdalwala1.github.io/valentine-mahek/video/";
+  }, 900);
 }
 
 function createConfetti() {
@@ -256,7 +244,7 @@ function animatePolaroids() {
 }
 
 // ===============================
-// AUDIO FADES (UNCHANGED)
+// AUDIO FADE HELPERS
 // ===============================
 function fadeInAudio(audio, target = 0.4, duration = 1000) {
   if (!audio) return;
@@ -273,6 +261,9 @@ function fadeOutAudio(audio, duration = 800) {
   const step = audio.volume / (duration / 50);
   const fade = setInterval(() => {
     audio.volume = Math.max(audio.volume - step, 0);
-    if (audio.volume === 0) clearInterval(fade);
+    if (audio.volume === 0) {
+      audio.pause();
+      clearInterval(fade);
+    }
   }, 50);
 }

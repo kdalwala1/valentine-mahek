@@ -17,8 +17,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // 🎼 Start background music with smooth fade
   bgMusic = document.getElementById("bgMusic");
+
 if (bgMusic) {
   bgMusic.loop = true;
+  bgMusic.volume = 0;
+  bgMusic.play().catch(() => {});
   fadeInAudio(bgMusic);
 }
 });

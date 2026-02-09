@@ -1,18 +1,18 @@
-// Valentine Website JavaScript
-
 // ===============================
-// GLOBAL VARIABLES
+// GLOBAL STATE
 // ===============================
-let currentSongIndex = 0;
-let songs = [];
-let bgMusic = null;
+let bgMusic;
 let userInteracted = false;
 let isOnSongsPage = false;
 
+let songs = [];
+let currentSongIndex = 0;
+let currentlyPlaying = null;
+
 // ===============================
-// AUDIO UNLOCK (REQUIRED)
+// USER INTERACTION UNLOCK
 // ===============================
-function unlockAudio() {
+function unlockAudioOnce() {
   if (userInteracted) return;
   userInteracted = true;
 
@@ -22,7 +22,7 @@ function unlockAudio() {
     fadeInAudio(bgMusic);
   }
 }
-document.addEventListener("click", unlockAudio, { once: true });
+document.addEventListener("click", unlockAudioOnce, { once: true });
 
 // ===============================
 // INITIAL LOAD
@@ -40,18 +40,15 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ===============================
-// NAVIGATION
+// NAVIGATION (FIXED)
 // ===============================
 function navigateToPage(pageId) {
-  document.querySelectorAll(".page").forEach(p =>
-    p.classList.remove("active")
-  );
-
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
   const page = document.getElementById(pageId);
   if (!page) return;
   page.classList.add("active");
 
-  // ---------- MUSIC CONTROL ----------
+  // ---------- SONG PAGE ----------
   if (pageId === "songs") {
     isOnSongsPage = true;
 
@@ -63,11 +60,17 @@ function navigateToPage(pageId) {
     }
 
     setupSongs();
+
+    // Auto play cassette ONLY after interaction
     if (userInteracted) playSongSequence();
-  } else {
-    // Leaving songs page
-    isOnSongsPage = false;
-    stopAllSongs();
+  }
+
+  // ---------- LEAVING SONG PAGE ----------
+  else {
+    if (isOnSongsPage) {
+      stopAllSongs();
+      isOnSongsPage = false;
+    }
 
     if (bgMusic && userInteracted) {
       bgMusic.volume = 0;
@@ -106,6 +109,24 @@ function startLoadingAnimation() {
 }
 
 // ===============================
+// PETALS
+// ===============================
+function initializePetals() {
+  const c = document.getElementById("petalsContainer");
+  if (!c) return;
+
+  ["🌸","🌺","💖","💕","🌹","💗"].forEach(() => {
+    const p = document.createElement("div");
+    p.className = "petal";
+    p.textContent = ["🌸","🌺","💖","💕","🌹","💗"][Math.floor(Math.random()*6)];
+    p.style.left = Math.random()*100 + "%";
+    p.style.animationDuration = Math.random()*3 + 5 + "s";
+    p.style.animationDelay = Math.random()*5 + "s";
+    c.appendChild(p);
+  });
+}
+
+// ===============================
 // HAMBURGER
 // ===============================
 function setupHamburgerMenu() {
@@ -115,9 +136,9 @@ function setupHamburgerMenu() {
   document.getElementById("closeExplore")?.addEventListener("click", () =>
     document.getElementById("exploreOverlay")?.classList.remove("active")
   );
-  document.querySelectorAll(".explore-item").forEach(i => {
-    i.onclick = () => navigateToPage(i.dataset.page);
-  });
+  document.querySelectorAll(".explore-item").forEach(i =>
+    i.onclick = () => navigateToPage(i.dataset.page)
+  );
 }
 
 // ===============================
@@ -138,7 +159,7 @@ function setupEnvelope() {
 }
 
 // ===============================
-// CASSETTE MUSIC
+// CASSETTE MUSIC (FIXED)
 // ===============================
 function setupSongs() {
   songs = [
@@ -159,6 +180,8 @@ function playCurrentSong() {
   if (!s) return;
 
   s.play().catch(() => {});
+  currentlyPlaying = s;
+
   s.onended = () => {
     currentSongIndex++;
     playCurrentSong();
@@ -170,32 +193,52 @@ function stopAllSongs() {
     s.pause();
     s.currentTime = 0;
   });
+  currentlyPlaying = null;
   currentSongIndex = 0;
 }
 
+// Manual play/pause button still works
+function toggleSong(n) {
+  const audio = document.getElementById("song"+n);
+  if (!audio) return;
+
+  if (currentlyPlaying && currentlyPlaying !== audio) {
+    currentlyPlaying.pause();
+    currentlyPlaying.currentTime = 0;
+  }
+
+  if (audio.paused) {
+    audio.play();
+    currentlyPlaying = audio;
+  } else {
+    audio.pause();
+    currentlyPlaying = null;
+  }
+}
+
 // ===============================
-// MEMORY GAME (FULLY RESTORED)
+// MEMORY GAME (FULL FIX)
 // ===============================
-let flippedCards = [];
-let matchedPairs = 0;
+let flipped = [];
+let matches = 0;
 let moves = 0;
-let canFlip = true;
+let lock = false;
 
 function initializeMemoryGame() {
   const board = document.getElementById("gameBoard");
   if (!board) return;
 
-  flippedCards = [];
-  matchedPairs = 0;
+  flipped = [];
+  matches = 0;
   moves = 0;
-  canFlip = true;
+  lock = false;
 
   document.getElementById("moves").textContent = "0";
   document.getElementById("matches").textContent = "0";
   document.getElementById("gameWin").classList.remove("show");
 
   const emojis = ["💕","💖","💗","💘","💝","💞"];
-  const cards = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
+  const cards = [...emojis, ...emojis].sort(() => Math.random()-0.5);
 
   board.innerHTML = "";
   cards.forEach(e => {
@@ -207,48 +250,41 @@ function initializeMemoryGame() {
 }
 
 function flipCard(card, emoji) {
-  if (!canFlip || card.textContent) return;
+  if (lock || card.textContent) return;
 
   card.textContent = emoji;
-  flippedCards.push(card);
+  flipped.push(card);
 
-  if (flippedCards.length === 2) {
-    canFlip = false;
+  if (flipped.length === 2) {
+    lock = true;
     moves++;
     document.getElementById("moves").textContent = moves;
-    setTimeout(checkMatch, 800);
+    setTimeout(checkMatch, 700);
   }
 }
 
 function checkMatch() {
-  const [a, b] = flippedCards;
-
+  const [a,b] = flipped;
   if (a.textContent === b.textContent) {
-    matchedPairs++;
-    document.getElementById("matches").textContent = matchedPairs;
-
-    if (matchedPairs === 6) {
+    matches++;
+    document.getElementById("matches").textContent = matches;
+    if (matches === 6) {
       document.getElementById("gameWin").classList.add("show");
     }
   } else {
     a.textContent = "";
     b.textContent = "";
   }
-
-  flippedCards = [];
-  canFlip = true;
+  flipped = [];
+  lock = false;
 }
 
 // ===============================
-// FINAL LETTER + VIDEO
+// FINAL LETTER
 // ===============================
 function sealLetter() {
-  const c = document.getElementById("finalLetterCard");
-  const m = document.getElementById("sealedMessage");
-  if (!c || !m) return;
-
-  c.style.display = "none";
-  m.classList.add("show");
+  document.getElementById("finalLetterCard").style.display = "none";
+  document.getElementById("sealedMessage").classList.add("show");
   createConfetti();
 }
 
@@ -259,56 +295,39 @@ function goToVideo() {
   setTimeout(() => {
     window.location.href =
       "https://kdalwala1.github.io/valentine-mahek/video/";
-  }, 900);
+  }, 800);
 }
 
 // ===============================
 // POLAROIDS
 // ===============================
 function animatePolaroids() {
-  document.querySelectorAll(".polaroid").forEach((p, i) =>
-    setTimeout(() => p.classList.add("show"), i * 400)
+  document.querySelectorAll(".polaroid").forEach((p,i)=>
+    setTimeout(()=>p.classList.add("show"), i*400)
   );
-}
-
-// ===============================
-// CONFETTI
-// ===============================
-function createConfetti() {
-  for (let i = 0; i < 20; i++) {
-    const c = document.createElement("div");
-    c.textContent = "💖";
-    c.style.position = "fixed";
-    c.style.left = Math.random() * 100 + "%";
-    c.style.top = "-20px";
-    c.style.fontSize = "2rem";
-    c.style.animation = "fall 3s linear";
-    document.body.appendChild(c);
-    setTimeout(() => c.remove(), 3000);
-  }
 }
 
 // ===============================
 // AUDIO FADES
 // ===============================
-function fadeInAudio(a, t = 0.4, d = 1000) {
-  if (!a) return;
-  a.volume = 0;
-  const s = t / (d / 50);
-  const i = setInterval(() => {
-    a.volume = Math.min(a.volume + s, t);
-    if (a.volume >= t) clearInterval(i);
-  }, 50);
+function fadeInAudio(a,t=0.4,d=800){
+  if(!a) return;
+  a.volume=0;
+  const s=t/(d/50);
+  const i=setInterval(()=>{
+    a.volume=Math.min(a.volume+s,t);
+    if(a.volume>=t) clearInterval(i);
+  },50);
 }
 
-function fadeOutAudio(a, d = 800) {
-  if (!a) return;
-  const s = a.volume / (d / 50);
-  const i = setInterval(() => {
-    a.volume = Math.max(a.volume - s, 0);
-    if (a.volume === 0) {
+function fadeOutAudio(a,d=600){
+  if(!a) return;
+  const s=a.volume/(d/50);
+  const i=setInterval(()=>{
+    a.volume=Math.max(a.volume-s,0);
+    if(a.volume===0){
       a.pause();
       clearInterval(i);
     }
-  }, 50);
+  },50);
 }

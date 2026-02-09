@@ -6,6 +6,7 @@ let songs = [];
 
 // 🎵 Background music
 let bgMusic = null;
+let isBgMusicPlaying = false;
 
 // ===============================
 // INITIAL LOAD
@@ -15,13 +16,13 @@ document.addEventListener("DOMContentLoaded", function () {
   startLoadingAnimation();
   setupHamburgerMenu();
 
-  // Background music (unchanged)
   bgMusic = document.getElementById("bgMusic");
   if (bgMusic) {
     bgMusic.loop = true;
     bgMusic.volume = 0;
     bgMusic.play().catch(() => {});
     fadeInAudio(bgMusic);
+    isBgMusicPlaying = true;
   }
 });
 
@@ -33,7 +34,6 @@ function initializePetals() {
   if (!petalsContainer) return;
 
   const petalEmojis = ["🌸", "🌺", "💖", "💕", "🌹", "💗"];
-
   for (let i = 0; i < 15; i++) {
     const petal = document.createElement("div");
     petal.className = "petal";
@@ -53,7 +53,9 @@ function startLoadingAnimation() {
   const progressFill = document.getElementById("progressFill");
   if (!progressFill) return;
 
+  progressFill.style.width = "0%";
   let progress = 0;
+
   const interval = setInterval(() => {
     progress += 2;
     progressFill.style.width = progress + "%";
@@ -69,21 +71,37 @@ function startLoadingAnimation() {
 // NAVIGATION
 // ===============================
 function navigateToPage(pageId) {
-  document.querySelectorAll(".page").forEach((p) =>
-    p.classList.remove("active")
-  );
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
 
   const targetPage = document.getElementById(pageId);
   if (!targetPage) return;
   targetPage.classList.add("active");
 
-  // Envelope fix
+  // 🔊 MUSIC CONTROL
+  if (pageId === "songs") {
+    // stop background music
+    if (bgMusic && isBgMusicPlaying) {
+      fadeOutAudio(bgMusic);
+      isBgMusicPlaying = false;
+    }
+
+    // autoplay cassette sequence
+    setupSongs();
+    playSongSequence();
+  } else {
+    stopAllSongs();
+
+    if (bgMusic && !isBgMusicPlaying) {
+      bgMusic.volume = 0;
+      bgMusic.play().catch(() => {});
+      fadeInAudio(bgMusic);
+      isBgMusicPlaying = true;
+    }
+  }
+
+  if (pageId === "loading") startLoadingAnimation();
   if (pageId === "envelope") setupEnvelope();
-
-  // Memory game fix
   if (pageId === "memory-game") initializeMemoryGame();
-
-  // Polaroid animation
   if (pageId === "moments") animatePolaroids();
 
   document.getElementById("exploreOverlay")?.classList.remove("active");
@@ -97,20 +115,16 @@ function setupHamburgerMenu() {
   const overlay = document.getElementById("exploreOverlay");
   const close = document.getElementById("closeExplore");
 
-  hamburger?.addEventListener("click", () =>
-    overlay.classList.add("active")
-  );
-  close?.addEventListener("click", () =>
-    overlay.classList.remove("active")
-  );
+  hamburger?.addEventListener("click", () => overlay.classList.add("active"));
+  close?.addEventListener("click", () => overlay.classList.remove("active"));
 
-  document.querySelectorAll(".explore-item").forEach((item) => {
+  document.querySelectorAll(".explore-item").forEach(item => {
     item.onclick = () => navigateToPage(item.dataset.page);
   });
 }
 
 // ===============================
-// ENVELOPE FIX
+// ENVELOPE
 // ===============================
 function setupEnvelope() {
   const envelope = document.getElementById("envelope");
@@ -128,74 +142,74 @@ function setupEnvelope() {
 }
 
 // ===============================
-// SONG PLAYER
+// SONG PLAYER (CASSETTE)
 // ===============================
-let currentlyPlaying = null;
+function setupSongs() {
+  songs = [
+    document.getElementById("song1"),
+    document.getElementById("song2"),
+    document.getElementById("song3")
+  ].filter(Boolean);
+}
 
-function toggleSong(songNumber) {
-  const audio = document.getElementById("song" + songNumber);
-  if (!audio) return;
+function playSongSequence() {
+  stopAllSongs();
+  currentSongIndex = 0;
+  playCurrentSong();
+}
 
-  const button = audio.previousElementSibling;
-  const reels = audio
-    .closest(".cassette-card")
-    .querySelectorAll(".reel");
+function playCurrentSong() {
+  const song = songs[currentSongIndex];
+  if (!song) return;
 
-  if (currentlyPlaying && currentlyPlaying !== audio) {
-    currentlyPlaying.pause();
-    currentlyPlaying.currentTime = 0;
-  }
+  song.play().catch(() => {});
+  song.onended = () => {
+    currentSongIndex++;
+    playCurrentSong();
+  };
+}
 
-  if (audio.paused) {
-    audio.play();
-    button.textContent = "⏸ Pause";
-    reels.forEach((r) => r.classList.add("spinning"));
-    currentlyPlaying = audio;
-  } else {
-    audio.pause();
-    button.textContent = "▶ Play";
-    reels.forEach((r) => r.classList.remove("spinning"));
-    currentlyPlaying = null;
-  }
+function stopAllSongs() {
+  songs.forEach(song => {
+    song.pause();
+    song.currentTime = 0;
+  });
+  currentSongIndex = 0;
 }
 
 // ===============================
-// MEMORY GAME FIX
+// MEMORY GAME (UNCHANGED)
 // ===============================
-let gameCards = [];
 let flippedCards = [];
 let matchedPairs = 0;
-let moves = 0;
 let canFlip = true;
 
 function initializeMemoryGame() {
   const gameBoard = document.getElementById("gameBoard");
   if (!gameBoard) return;
 
-  matchedPairs = 0;
-  moves = 0;
   flippedCards = [];
+  matchedPairs = 0;
   canFlip = true;
 
   document.getElementById("moves").textContent = "0";
   document.getElementById("matches").textContent = "0";
   document.getElementById("gameWin").classList.remove("show");
 
-  const emojis = ["💕", "💖", "💗", "💘", "💝", "💞"];
-  gameCards = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
+  const emojis = ["💕","💖","💗","💘","💝","💞"];
+  const cards = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
 
   gameBoard.innerHTML = "";
-  gameCards.forEach((emoji) => {
-    const card = document.createElement("div");
-    card.className = "game-card";
-    card.onclick = () => flipCard(card, emoji);
-    gameBoard.appendChild(card);
+  cards.forEach(e => {
+    const c = document.createElement("div");
+    c.className = "game-card";
+    c.onclick = () => flipCard(c, e);
+    gameBoard.appendChild(c);
   });
 }
 
 function flipCard(card, emoji) {
   if (!canFlip || card.textContent) return;
-
   card.textContent = emoji;
   flippedCards.push(card);
 
@@ -219,17 +233,24 @@ function checkMatch() {
 }
 
 // ===============================
-// FINAL LETTER FIX
+// FINAL LETTER + VIDEO
 // ===============================
 function sealLetter() {
-  const letterCard = document.getElementById("finalLetterCard");
-  const sealedMessage = document.getElementById("sealedMessage");
+  const card = document.getElementById("finalLetterCard");
+  const msg = document.getElementById("sealedMessage");
+  if (!card || !msg) return;
 
-  if (!letterCard || !sealedMessage) return;
-
-  letterCard.style.display = "none";
-  sealedMessage.classList.add("show");
+  card.style.display = "none";
+  msg.classList.add("show");
   createConfetti();
+}
+
+function goToVideo() {
+  if (bgMusic) fadeOutAudio(bgMusic);
+  setTimeout(() => {
+    window.location.href =
+      "https://kdalwala1.github.io/valentine-mahek/video/";
+  }, 900);
 }
 
 function createConfetti() {
@@ -256,7 +277,7 @@ function animatePolaroids() {
 }
 
 // ===============================
-// AUDIO FADES (UNCHANGED)
+// AUDIO FADE
 // ===============================
 function fadeInAudio(audio, target = 0.4, duration = 1000) {
   if (!audio) return;
@@ -273,6 +294,9 @@ function fadeOutAudio(audio, duration = 800) {
   const step = audio.volume / (duration / 50);
   const fade = setInterval(() => {
     audio.volume = Math.max(audio.volume - step, 0);
-    if (audio.volume === 0) clearInterval(fade);
+    if (audio.volume === 0) {
+      audio.pause();
+      clearInterval(fade);
+    }
   }, 50);
 }

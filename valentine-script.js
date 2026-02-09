@@ -77,6 +77,15 @@ function navigateToPage(pageId) {
   if (!targetPage) return;
   targetPage.classList.add("active");
 
+  // 🔁 Restart loading animation when Start is clicked
+if (pageId === "loading") {
+  const progressFill = document.getElementById("progressFill");
+  if (progressFill) {
+    progressFill.style.width = "0%";
+  }
+  startLoadingAnimation();
+}
+
   // Envelope fix
   if (pageId === "envelope") setupEnvelope();
 

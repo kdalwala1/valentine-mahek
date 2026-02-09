@@ -217,66 +217,79 @@ function toggleSong(n) {
 }
 
 // ===============================
-// MEMORY GAME (FULL FIX)
+// MEMORY GAME (FINAL FIX)
 // ===============================
-let flipped = [];
-let matches = 0;
+let flippedCards = [];
+let matchedPairs = 0;
 let moves = 0;
-let lock = false;
+let lockBoard = false;
 
 function initializeMemoryGame() {
   const board = document.getElementById("gameBoard");
   if (!board) return;
 
-  flipped = [];
-  matches = 0;
+  // Reset state
+  flippedCards = [];
+  matchedPairs = 0;
   moves = 0;
-  lock = false;
+  lockBoard = false;
 
   document.getElementById("moves").textContent = "0";
   document.getElementById("matches").textContent = "0";
   document.getElementById("gameWin").classList.remove("show");
 
-  const emojis = ["💕","💖","💗","💘","💝","💞"];
-  const cards = [...emojis, ...emojis].sort(() => Math.random()-0.5);
+  const emojis = ["💕", "💖", "💗", "💘", "💝", "💞"];
+  const cards = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
 
   board.innerHTML = "";
-  cards.forEach(e => {
-    const c = document.createElement("div");
-    c.className = "game-card";
-    c.onclick = () => flipCard(c, e);
-    board.appendChild(c);
+
+  cards.forEach((emoji) => {
+    const card = document.createElement("div");
+    card.className = "game-card";
+    card.dataset.emoji = emoji;
+    card.dataset.matched = "false";
+    card.onclick = () => flipCard(card);
+    board.appendChild(card);
   });
 }
 
-function flipCard(card, emoji) {
-  if (lock || card.textContent) return;
+function flipCard(card) {
+  if (lockBoard) return;
+  if (card.dataset.matched === "true") return;
+  if (card.textContent) return;
 
-  card.textContent = emoji;
-  flipped.push(card);
+  card.textContent = card.dataset.emoji;
+  flippedCards.push(card);
 
-  if (flipped.length === 2) {
-    lock = true;
+  if (flippedCards.length === 2) {
+    lockBoard = true;
     moves++;
     document.getElementById("moves").textContent = moves;
-    setTimeout(checkMatch, 700);
+    setTimeout(checkMatch, 800);
   }
 }
 
 function checkMatch() {
-  const [a,b] = flipped;
-  if (a.textContent === b.textContent) {
-    matches++;
-    document.getElementById("matches").textContent = matches;
-    if (matches === 6) {
-      document.getElementById("gameWin").classList.add("show");
+  const [card1, card2] = flippedCards;
+
+  if (card1.dataset.emoji === card2.dataset.emoji) {
+    card1.dataset.matched = "true";
+    card2.dataset.matched = "true";
+    matchedPairs++;
+    document.getElementById("matches").textContent = matchedPairs;
+
+    if (matchedPairs === 6) {
+      setTimeout(() => {
+        document.getElementById("gameWin").classList.add("show");
+      }, 500);
     }
   } else {
-    a.textContent = "";
-    b.textContent = "";
+    card1.textContent = "";
+    card2.textContent = "";
   }
-  flipped = [];
-  lock = false;
+
+  flippedCards = [];
+  lockBoard = false;
 }
 
 // ===============================

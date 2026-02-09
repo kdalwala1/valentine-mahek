@@ -217,7 +217,7 @@ function toggleSong(n) {
 }
 
 // ===============================
-// MEMORY GAME (FINAL – STABLE)
+// MEMORY GAME (FINAL – MATCHES YOUR HTML)
 // ===============================
 let firstCard = null;
 let secondCard = null;
@@ -229,7 +229,6 @@ function initializeMemoryGame() {
   const board = document.getElementById("gameBoard");
   if (!board) return;
 
-  // reset
   firstCard = null;
   secondCard = null;
   lockBoard = false;
@@ -238,6 +237,7 @@ function initializeMemoryGame() {
 
   document.getElementById("moves").textContent = "0";
   document.getElementById("matches").textContent = "0";
+  document.getElementById("finalMoves").textContent = "0";
   document.getElementById("gameWin").classList.remove("show");
 
   const emojis = ["💕", "💖", "💗", "💘", "💝", "💞"];
@@ -283,6 +283,7 @@ function checkForMatch() {
     document.getElementById("matches").textContent = matches;
 
     if (matches === 6) {
+      document.getElementById("finalMoves").textContent = moves;
       setTimeout(() => {
         document.getElementById("gameWin").classList.add("show");
       }, 400);

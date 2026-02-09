@@ -73,26 +73,34 @@ function navigateToPage(pageId) {
     if (targetPage) {
         targetPage.classList.add('active');
 
- // 🎵 Background Music Logic (FINAL)
-if (pageId === "songs") {
-  // Disable background music
-  bgMusicEnabled = false;
+ // 🎵 FINAL MUSIC CONTROL (HARD STOP VERSION)
 
+if (pageId === "songs") {
+  // 1️⃣ Fade out background music first
   if (bgMusic) {
     fadeOutAudio(bgMusic);
+
+    // 2️⃣ HARD STOP after fade
+    setTimeout(() => {
+      bgMusic.pause();
+      bgMusic.currentTime = 0;
+    }, 900); // slightly longer than fade duration
   }
 
-  // Start cassette music
+  // 3️⃣ Start cassette music
   setupSongs();
   playSongSequence();
 
 } else {
-  // Leaving Songs page
+  // Leaving cassette page
+
+  // Stop cassette songs
   stopAllSongs();
 
-  bgMusicEnabled = true;
-
-  if (bgMusic && bgMusic.paused) {
+  // 4️⃣ START BG MUSIC FRESH AGAIN
+  if (bgMusic) {
+    bgMusic.volume = 0;
+    bgMusic.play().catch(() => {});
     fadeInAudio(bgMusic);
   }
 }
